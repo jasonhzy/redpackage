@@ -2,6 +2,7 @@
     "name": "jasonhzy/redpackage",
     "description": "red pack",
     "keywords" : ["red pack","wechat"],
+    "license": "MIT",
     "authors": [
         {
             "name": "jasonhzy",
@@ -13,6 +14,6 @@
     "homepage": "https://jasonhzy.github.io/",
     "require": {
       "php" : ">=5.3.2",
-      "jasonhzy/redpackage" : "dev-master"
+      "jasonhzy/redpackage" : "dev-jason"
     }
 }
