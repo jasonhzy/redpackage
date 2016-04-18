@@ -23,18 +23,19 @@
 ## 引入BeeCloud API
 
 ###使用[composer](https://getcomposer.org/)
+> composer 是php的包管理工具， 通过composer.json里的配置管理依赖的包，同时可以在使用类时自动加载对应的包
+
 在你的composer.json中添加如下依赖
 
-	{
-		{
-		"require": {
-			"beecloud.cn/rest": "{version}"
-		}
+```
+{
+	"require": {
+		"beecloud.cn/rest": "{version}"
 	}
+}
+```
 
->composer 是php的包管理工具， 通过json里的配置管理依赖的包， 同时可以在使用类时自动加载对应的包
 
-其中composer支持需要version>=v2.2.0  
 version ＝ dev-master为主干分支开发版本,请酌情使用
 
 然后命令行执行
@@ -43,27 +44,21 @@ version ＝ dev-master为主干分支开发版本,请酌情使用
 composer install
 ```
 
-在需要使用的php文件中使用 Composer 的 autoload 引入
+在需要使用的php文件中引入vendor/autoload.php
 
 ```
 require_once('vendor/autoload.php');
 ```
 
 ###手动使用
-适合不能使用composer（PHP < 5.3.2）或者namespace(PHP < 5.3)的情况
-拷贝当前所有文件（demo可以忽略）到你指定的目录<YourPath>下，你的代码中
+适合不能使用composer(PHP < 5.3.2)或者namespace(PHP <
+5.3)的情况，拷贝当前所有文件(demo可以忽略)到你指定的目录<YourPath>下，你的代码中
 	
 	require_once("<YourPath>/loader.php");
-	
-####原有使用v2.2.0以下的用户和不使用namespace的用户则请修改为
-
-	require_once("<YourPath>/degrade/beecloud.php");	
 		
-	
-	
 
 ## BeeCloud API 
->$data参数和返回参数请参考BeeCloud RESTfull API,同时可以参考demo中各渠道的代码示例）
+> $data参数和返回参数请参考BeeCloud RESTfull API,同时可以参考demo中各渠道的代码示例）
 
 ##发起支付订单 
 
@@ -185,34 +180,39 @@ data参数（array类型）:
 app_id | String | BeeCloud平台的AppID | App在BeeCloud平台的唯一标识 | 0950c062-5e41-44e3-8f52-f89d8cf2b6eb | 是
 timestamp | Long | 签名生成时间 | 时间戳，毫秒数 | 1435890533866 | 是
 app_sign | String | 加密签名 | 算法: md5(app\_id+timestamp+app\_secret)，32位16进制格式,不区分大小写 | b927899dda6f9a04afc57f21ddf69d69 | 是
-channel| String | 渠道类型 | 根据不同场景选择不同的支付方式 | WX\_APP、WX\_NATIVE、WX\_JSAPI、ALI\_APP、ALI\_WEB、ALI\_QRCODE、ALI\_OFFLINE_QRCODE、ALI_WAP、UN\_APP、UN\_WEB、JD_WAP、JD_WEB、YEE_WAP、YEE_WEB、KUAIQIAN_WAP、KUAIQIAN_WEB、BD\_WAP、BD\_WEB(详见附注）| 是
+channel| String | 渠道类型 | 根据不同场景选择不同的支付方式 | WX\_APP、WX\_NATIVE、WX\_JSAPI、ALI\_APP、ALI\_WEB、ALI\_QRCODE、ALI\_OFFLINE\_QRCODE、ALI\_WAP、UN\_APP、UN\_WEB、PAYPAL\_SANDBOX、PAYPAL\_LIVE、JD\_WAP、JD\_WEB、YEE\_WAP、YEE\_WEB、YEE\_NOBANKCARD、KUAIQIAN\_WAP、KUAIQIAN\_WEB、BD\_APP、BD\_WEB、BD\_WAP(详见附注）| 是
 total_fee | Integer | 订单总金额 | 必须是正整数，单位为分 | 1 | 是
 bill_no | String | 商户订单号 | 8到32位数字和/或字母组合，请自行确保在商户系统中唯一，同一订单号不可重复提交，否则会造成订单重复 | 201506101035040000001 | 是
 title| String | 订单标题 | UTF8编码格式，32个字节内，最长支持16个汉字 | 白开水 | 是
 optional | Map | 附加数据 | 用户自定义的参数，将会在webhook通知中原样返回，该字段主要用于商户携带订单的自定义数据 | {"key1":"value1","key2":"value2",...} | 否
-return_url | String | 同步返回页面| 支付渠道处理完请求后,当前页面自动跳转到商户网站里指定页面的http路径，必须为http://或者https://开头 | beecloud.cn/returnUrl.jsp | 当channel参数为 ALI\_WEB 或 ALI\_QRCODE 或 UN\_WEB时为必填
+analysis | Map | 分析数据 | 用于统计分析的数据，将会在控制台的统计分析报表中展示，**<mark>用户自愿上传</mark>** | 包括以下基本字段：`os_name(系统名称，如"iOS"，"Android")` `os_version(系统版本，如"5.1")` `model(手机型号，如"iPhone 6")` `app_name(应用名称)` `app_version(应用版本号)` `device_id(设备ID)` `category(类别，用户可自定义，如游戏分发渠道，门店ID等)` `browser_name(浏览器名称)` `browser_version(浏览器版本)` | 否
+return_url | String | 同步返回页面| 支付渠道处理完请求后,当前页面自动跳转到商户网站里指定页面的http路径，**<mark>中间请勿有#,?等字符</mark>** | http://beecloud.cn/returnUrl.jsp | 当channel参数为 ALI\_WEB 或 ALI\_QRCODE 或 UN\_WEB或JD\_WAP或JD\_WEB时为必填
+bill_timeout | Integer | 订单失效时间 | 必须为非零正整数，单位为秒，建议最短失效时间间隔必须<mark>大于</mark>360秒 | 360 | 否, **<mark>京东(JD)不支持该参数。</mark>**
 
-> 注：channel的参数值含义：  
-WX\_APP: 微信手机原生APP支付  
-WX\_NATIVE: 微信公众号二维码支付  
-WX\_JSAPI: 微信公众号支付  
-ALI\_APP: 支付宝手机原生APP支付  
-ALI\_WEB: 支付宝PC网页支付  
-ALI\_QRCODE: 支付宝内嵌二维码支付  
-ALI\_OFFLINE_QRCODE: 支付宝线下二维码支付  
-ALI\_WAP: 支付宝移动网页支付  
-UN\_APP: 银联手机原生APP支付  
-UN\_WEB: 银联PC网页支付  
-JD\_WAP: 京东移动网页支付  
-JD\_WEB: 京东PC网页支付  
-YEE\_WAP: 易宝移动网页支付   
-YEE\_WEB: 易宝PC网页支付  
-KUAIQIAN\_WAP: 快钱移动网页支付  
-KUAIQIAN\_WEB: 快钱PC网页支  
-BD\_WAP: 百度移动网页支付  
-BD\_WEB: 百度PC网页支付
 
-  
+> 注：channel的参数值含义：
+WX\_APP: 微信手机原生APP支付
+WX\_NATIVE: 微信公众号二维码支付
+WX\_JSAPI: 微信公众号支付
+ALI\_APP: 支付宝手机原生APP支付
+ALI\_WEB: 支付宝PC网页支付
+ALI\_QRCODE: 支付宝内嵌二维码支付
+ALI\_OFFLINE\_QRCODE: 支付宝线下二维码支付
+ALI\_WAP: 支付宝移动网页支付
+UN\_APP: 银联手机原生APP支付
+UN\_WEB: 银联PC网页支付
+JD\_WAP: 京东移动网页支付
+JD\_WEB: 京东PC网页支付
+YEE\_WAP: 易宝移动网页支付
+YEE\_WEB: 易宝PC网页支付
+YEE\_NOBANKCARDB: 易宝充值卡支付
+KUAIQIAN\_WAP: 快钱移动网页支付
+KUAIQIAN\_WEB: 快钱PC网页支付
+PAYPAL\_LIVE: PAYPAL生产环境支付
+PAYPAL\_SANDBOX: PAYPAL沙箱环境支付
+BD\_APP: 百度手机原生APP支付
+BD\_WAP: 百度移动网页支付
+BD\_WEB: 百度pc网页支付
 
 - 以下是`微信公众号支付(WX_JSAPI)`的**<mark>必填</mark>**参数
 
@@ -226,107 +226,43 @@ openid| String | 用户相对于微信公众号的唯一id | 0950c062-5e41-44e3-
 ---- | ---- | ---- | ----
 show_url| String | 商品展示地址以http://开头 | http://beecloud.cn
 
-- 以下是`支付宝内嵌二维码支付(ALI_QRCODE)`的**<mark>选填</mark>**参数
+- 以下是`支付宝内嵌二维码支付(ALI_QRCODE)`的**<mark>必填</mark>**参数
 
 参数名 | 类型 | 含义 | 例子
 ---- | ---- | ---- | ----
 qr\_pay\_mode| String | 二维码类型 | 0,1,3
+
+> 注： 二维码类型含义
+0： 订单码-简约前置模式, 对应 iframe 宽度不能小于 600px, 高度不能小于 300px
+1： 订单码-前置模式, 对应 iframe 宽度不能小于 300px, 高度不能小于 600px
+3： 订单码-迷你前置模式, 对应 iframe 宽度不能小于 75px, 高度不能小于 75px
 
 - 以下是`易宝移动网页支付(YEE_WAP)`的**<mark>必填</mark>**参数
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 identity_id | String | 50位以内数字和/或字母组合，易宝移动网页（一键）支付用户唯一标识符，用于绑定用户一键支付的银行卡信息
 
-> 注： 二维码类型含义   
-0： 订单码-简约前置模式, 对应 iframe 宽度不能小于 600px, 高度不能小于 300px   
-1： 订单码-前置模式, 对应 iframe 宽度不能小于 300px, 高度不能小于 600px  
-3： 订单码-迷你前置模式, 对应 iframe 宽度不能小于 75px, 高度不能小于 75px  
+- 以下是`易宝点卡支付(YEE_NOBANKCARD)`的**<mark>必填</mark>**参数
 
-返回结果（Object类型）:
-
-- 公共返回参数
-
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
-result\_code | Integer | 返回码，0为正常
-result\_msg  | String | 返回信息，OK为正常
-err\_detail  | String | 具体错误信息
+cardno | String | 点卡卡号，每种卡的要求不一样，例如易宝支持的QQ币卡号是9位的，江苏省内部的QQ币卡号是15位，易宝不支付
+cardpwd | String | 点卡密码，简称卡密
+frqid | String | 点卡类型编码，骏网一卡通(JUNNET),盛大卡(SNDACARD),神州行(SZX),征途卡(ZHENGTU),Q币卡(QQCARD),联通卡(UNICOM),久游卡(JIUYOU),易充卡(YICHONGCARD),网易卡(NETEASE),完美卡(WANMEI),搜狐卡(SOHU),电信卡(TELECOM),纵游一卡通(ZONGYOU),天下一卡通(TIANXIA),天宏一卡通(TIANHONG),32 一卡通(THIRTYTWOCARD)
+> 注： total_fee(订单金额)必须和充值卡面额相同，否则会造成**<mark>金额丢失(渠道方决定)</mark>**
 
-- 公共返回参数取值及含义参见支付公共返回参数部分, 以下是退款所特有的
+#### 返回类型: *JSON: Map*
+#### 返回参数:
 
-result\_code | result\_msg                | 含义
-----        | ----      			       | ----
-8           | NO\_SUCH_BILL             | 没有该订单
-9           | BILL\_UNSUCCESS            | 该订单没有支付成功
-10          | REFUND\_EXCEED\_TIME       | 已超过可退款时间
-11          | ALREADY\_REFUNDING         | 该订单已有正在处理中的退款
-12          | REFUND\_AMOUNT\_TOO\_LARGE | 提交的退款金额超出可退额度
-13          | NO\_SUCH\_REFUND           | 没有该退款记录
+- **公共返回参数**
 
-**当channel为`ALI_APP`、`ALI_WEB`、`ALI_QRCODE`时，以下字段在result_code为0时有返回**
- 
-参数名 | 类型 | 含义 
----- | ---- | ----
-url | String | 支付宝退款地址，需用户在支付宝平台上手动输入支付密码处理
-
-
-- 以下是`微信公众号支付(WX_JSAPI)`的**<mark>必填</mark>**参数
-
-参数名 | 类型 | 含义 | 例子
----- | ---- | ---- | ----
-openid| String | 用户相对于微信公众号的唯一id | 0950c062-5e41-44e3-8f52-f89d8cf2b6eb
-
-- 以下是`支付宝网页支付(ALI_WEB)`的**<mark>选填</mark>**参数
-
-参数名 | 类型 | 含义 | 例子
----- | ---- | ---- | ----
-show_url| String | 商品展示地址以http://开头 | http://beecloud.cn
-
-- 以下是`支付宝内嵌二维码支付(ALI_QRCODE)`的**<mark>选填</mark>**参数
-
-参数名 | 类型 | 含义 | 例子
----- | ---- | ---- | ----
-qr\_pay\_mode| String | 二维码类型 | 0,1,3
-
-> 注： 二维码类型含义   
-0： 订单码-简约前置模式, 对应 iframe 宽度不能小于 600px, 高度不能小于 300px   
-1： 订单码-前置模式, 对应 iframe 宽度不能小于 300px, 高度不能小于 600px  
-3： 订单码-迷你前置模式, 对应 iframe 宽度不能小于 75px, 高度不能小于 75px  
-
-返回结果（Object类型）:
-
-- 公共返回参数
-
-参数名 | 类型 | 含义 
----- | ---- | ----
-result\_code | Integer | 返回码，0为正常
-result\_msg  | String | 返回信息，OK为正常
-err\_detail  | String | 具体错误信息
-
-- 公共返回参数取值及含义参见支付公共返回参数部分, 以下是退款所特有的
-
-result\_code | result\_msg                | 含义
-----        | ----      			       | ----
-8           | NO\_SUCH_BILL             | 没有该订单
-9           | BILL\_UNSUCCESS            | 该订单没有支付成功
-10          | REFUND\_EXCEED\_TIME       | 已超过可退款时间
-11          | ALREADY\_REFUNDING         | 该订单已有正在处理中的退款
-12          | REFUND\_AMOUNT\_TOO\_LARGE | 提交的退款金额超出可退额度
-13          | NO\_SUCH\_REFUND           | 没有该退款记录
-
-**当channel为`ALI_APP`、`ALI_WEB`、`ALI_QRCODE`时，以下字段在result_code为0时有返回**
- 
-参数名 | 类型 | 含义 
----- | ---- | ----
-url | String | 支付宝退款地址，需用户在支付宝平台上手动输入支付密码处理
-
-
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 result_code | Integer | 返回码，0为正常
 result_msg  | String | 返回信息， OK为正常
 err_detail  | String | 具体错误信息
+id  | String | 成功发起支付后返回支付表记录唯一标识
 
 - **公共返回参数取值列表及其含义**
 
@@ -340,7 +276,7 @@ result_code | result_msg             | 含义
 5           | PARAM\_INVALID         | 参数不合法
 6           | CERT\_FILE\_ERROR      | 证书错误
 7           | CHANNEL\_ERROR         | 渠道内部错误
-14          | RUN\_TIME_ERROR        | 实时未知错误，请与技术联系帮助查看
+14          | RUNTIME\_ERROR         | 运行时错误
 
 > **当result_code不为0时，如需详细信息，请查看err\_detail字段**
 
@@ -348,7 +284,7 @@ result_code | result_msg             | 含义
 
 - WX_APP
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 app_id | String | 微信应用APPID
 partner_id | String | 微信支付商户号
@@ -360,13 +296,13 @@ prepay_id  | String | 微信预支付id
 
 - WX_NATIVE
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 code_url | String | 二维码地址
 
 - WX_JSAPI
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 app_id | String | 微信应用APPID
 package  | String | 微信支付打包参数
@@ -377,47 +313,53 @@ sign_type  | String | 签名类型，固定为MD5
 
 - ALI_APP
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 order\_string | String | 支付宝签名串
 
-- ALI_WEB
+- ALI_WEB，ALI_WAP
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 html | String | 支付宝跳转form，是一段HTML代码，自动提交
-url  | String | 支付宝跳转url，推荐使用html
+url  | String | 支付宝跳转url
 
 - ALI_OFFLINE_QRCODE
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 qr_code | String | 二维码码串,可以用二维码生成工具根据该码串值生成对应的二维码
 
 - ALI_QRCODE
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 html | String | 支付宝跳转form，是一段HTML代码，自动提交
 url  | String | 支付宝内嵌二维码地址，是一个URL
 
 - UN_APP
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 tn | String | 银联支付ticket number
 
-- UN_WEB、JD_WAP、JD_WEB、KUAIQIAN_WAP、KUAIQIAN_WEB
+- UN\_WEB、JD\_WAP、JD\_WEB、KUAIQIAN\_WAP、KUAIQIAN\_WEB
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 html | String | 支付页自动提交form表单内容
 
-- YEE_WAP、YEE_WEB、BD_WAP、BD_WEB
+- YEE\_WAP、YEE\_WEB、BD\_WAP、BD\_WEB
 
-参数名 | 类型 | 含义 
+参数名 | 类型 | 含义
 ---- | ---- | ----
 url | String | 支付页跳转地址
+
+- BD\_APP
+
+参数名 | 类型 | 含义
+---- | ---- | ----
+orderInfo | String | 百度支付order info
     
    
     
