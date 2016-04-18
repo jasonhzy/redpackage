@@ -9,7 +9,6 @@
             "email": "lotushzy@gmail.com"
         }
     ],
-    "version" : "v1.0.0",
     "minimum-stability": "dev",
     "homepage": "https://jasonhzy.github.io/",
     "require": {
