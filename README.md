@@ -5,38 +5,34 @@
 ## 简介
 
 本项目的官方GitHub地址是 [https://github.com/beecloud/beecloud-php](https://github.com/beecloud/beecloud-php)，目前支持以下功能：
-- 微信APP、
-- 支付宝APP、
-- 银联在线APP、
-- PayPal、
-- 百度钱包
-- APP支付功能，
-- 支付订单和退款订单的查询功能。
-- 还包含了线下收款功能(包括微信扫码、微信刷卡、支付宝扫码、支付宝条形码)，
+- 微信支付、支付宝支付、银联在线支付、百度钱包支付、京东支付等多种支付方式
+- 支付/退款订单总数的查询
 - 订单状态的查询与订单撤销
+- 支付订单和退款订单的查询
+- 根据ID(支付/退款订单唯一标识)查询订单记录、退款记录
 
 本SDK 基于 [BeeCloud RESTful API](https://github.com/beecloud/beecloud-rest-api)
 
-依赖:PHP 5.3+, PHP-curl
+依赖: PHP 5.3+, PHP-curl
 
 ## 准备
 
 1. BeeCloud[注册](http://beecloud.cn/register/)账号
 2. BeeCloud中创建应用，[填写支付渠道所需参数](http://beecloud.cn/doc/payapply)
 
+具体可参考[快速开始](https://beecloud.cn/apply/)
+
 ## 引入BeeCloud API
 
 ###使用[composer](https://getcomposer.org/)
 在你的composer.json中添加如下依赖
 
-```
-{
-  {
-  "require": {
-    "beecloud.cn/rest": "{version}"
-  }
-}
-```
+	{
+		{
+		"require": {
+			"beecloud.cn/rest": "{version}"
+		}
+	}
 
 >composer 是php的包管理工具， 通过json里的配置管理依赖的包， 同时可以在使用类时自动加载对应的包
 
