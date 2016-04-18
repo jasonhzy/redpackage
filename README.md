@@ -4,14 +4,13 @@
 
 ## 简介
 
-本项目的官方GitHub地址是 [https://github.com/beecloud/beecloud-php](https://github.com/beecloud/beecloud-php)，目前支持以下功能：
+本项目的官方GitHub地址是 [https://github.com/beecloud/beecloud-php](https://github.com/beecloud/beecloud-php)，本SDK 基于 [BeeCloud RESTful API](https://github.com/beecloud/beecloud-rest-api)，目前支持以下功能：
 - 微信支付、支付宝支付、银联在线支付、百度钱包支付、京东支付等多种支付方式
 - 支付/退款订单总数的查询
 - 订单状态的查询与订单撤销
 - 支付订单和退款订单的查询
 - 根据ID(支付/退款订单唯一标识)查询订单记录、退款记录
 
-本SDK 基于 [BeeCloud RESTful API](https://github.com/beecloud/beecloud-rest-api)
 
 依赖: PHP 5.3+, PHP-curl
 
